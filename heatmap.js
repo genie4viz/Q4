@@ -1,393 +1,141 @@
-// get the data
-links = [{
-        "source": "Green Bay Packers",
-        "target": "Kansas City Chiefs",
-        "value": 0
+var margin = {
+        top: 20,
+        right: 90,
+        bottom: 30,
+        left: 50
     },
-    {
-        "source": "Green Bay Packers",
-        "target": "Oakland Raiders",
-        "value": 0
-    },
-    {
-        "source": "New York Jets",
-        "target": "Baltimore Colts",
-        "value": 1
-    },
-    {
-        "source": "Kansas City Chiefs",
-        "target": "Minnesota Vikings",
-        "value": 1
-    },
-    {
-        "source": "Baltimore Colts",
-        "target": "Dallas Cowboys",
-        "value": 1
-    },
-    {
-        "source": "Dallas Cowboys",
-        "target": "Miami Dolphins",
-        "value": 0
-    },
-    {
-        "source": "Miami Dolphins",
-        "target": "Washington Redskins",
-        "value": 1
-    },
-    {
-        "source": "Miami Dolphins",
-        "target": "Minnesota Vikings",
-        "value": 1
-    },
-    {
-        "source": "Pittsburgh Steelers",
-        "target": "Minnesota Vikings",
-        "value": 1
-    },
-    {
-        "source": "Pittsburgh Steelers",
-        "target": "Dallas Cowboys",
-        "value": 1
-    },
-    {
-        "source": "Oakland Raiders",
-        "target": "Minnesota Vikings",
-        "value": 1
-    },
-    {
-        "source": "Dallas Cowboys",
-        "target": "Denver Broncos",
-        "value": 0
-    },
-    {
-        "source": "Pittsburgh Steelers",
-        "target": "Los Angeles Rams",
-        "value": 1
-    },
-    {
-        "source": "Oakland Raiders",
-        "target": "Philadelphia Eagles",
-        "value": 1
-    },
-    {
-        "source": "San Francisco 49ers",
-        "target": "Cincinnati Bengals",
-        "value": 0
-    },
-    {
-        "source": "Washington Redskins",
-        "target": "Miami Dolphins",
-        "value": 0
-    },
-    {
-        "source": "Los Angeles Raiders",
-        "target": "Washington Redskins",
-        "value": 1
-    },
-    {
-        "source": "San Francisco 49ers",
-        "target": "Miami Dolphins",
-        "value": 0
-    },
-    {
-        "source": "Chicago Bears",
-        "target": "New England Patriots",
-        "value": 0
-    },
-    {
-        "source": "New York Giants",
-        "target": "Denver Broncos",
-        "value": 0
-    },
-    {
-        "source": "Washington Redskins",
-        "target": "Denver Broncos",
-        "value": 0
-    },
-    {
-        "source": "San Francisco 49ers",
-        "target": "Denver Broncos",
-        "value": 0
-    },
-    {
-        "source": "New York Giants",
-        "target": "Buffalo Bills",
-        "value": 0
-    },
-    {
-        "source": "Washington Redskins",
-        "target": "Buffalo Bills",
-        "value": 0
-    },
-    {
-        "source": "Dallas Cowboys",
-        "target": "Buffalo Bills",
-        "value": 0
-    },
-    {
-        "source": "San Francisco 49ers",
-        "target": "San Diego Chargers",
-        "value": 0
-    },
-    {
-        "source": "Dallas Cowboys",
-        "target": "Pittsburgh Steelers",
-        "value": 0
-    },
-    {
-        "source": "Green Bay Packers",
-        "target": "New England Patriots",
-        "value": 0
-    },
-    {
-        "source": "Denver Broncos",
-        "target": "Green Bay Packers",
-        "value": 1
-    },
-    {
-        "source": "Denver Broncos",
-        "target": "Atlanta Falcons",
-        "value": 1
-    },
-    {
-        "source": "St. Louis Rams",
-        "target": "Tennessee Titans",
-        "value": 0
-    },
-    {
-        "source": "Baltimore Ravens",
-        "target": "New York Giants",
-        "value": 1
-    },
-    {
-        "source": "New England Patriots",
-        "target": "St. Louis Rams",
-        "value": 1
-    },
-    {
-        "source": "Tampa Bay Buccaneers",
-        "target": "Oakland Raiders",
-        "value": 0
-    },
-    {
-        "source": "New England Patriots",
-        "target": "Carolina Panthers",
-        "value": 1
-    },
-    {
-        "source": "New England Patriots",
-        "target": "Philadelphia Eagles",
-        "value": 1
-    },
-    {
-        "source": "Pittsburgh Steelers",
-        "target": "Seattle Seahawks",
-        "value": 1
-    },
-    {
-        "source": "Indianapolis Colts",
-        "target": "Chicago Bears",
-        "value": 1
-    },
-    {
-        "source": "New York Giants",
-        "target": "New England Patriots",
-        "value": 0
-    },
-    {
-        "source": "Pittsburgh Steelers",
-        "target": "Arizona Cardinals",
-        "value": 1
-    },
-    {
-        "source": "New Orleans Saints",
-        "target": "Indianapolis Colts",
-        "value": 0
-    },
-    {
-        "source": "Green Bay Packers",
-        "target": "Pittsburgh Steelers",
-        "value": 0
-    },
-    {
-        "source": "Baltimore Ravens",
-        "target": "San Francisco 49ers",
-        "value": 1
-    },
-    {
-        "source": "Seattle Seahawks",
-        "target": "Denver Broncos",
-        "value": 0
-    },
-    {
-        "source": "New England Patriots",
-        "target": "Seattle Seahawks",
-        "value": 1
-    },
-    {
-        "source": "Denver Broncos",
-        "target": "Carolina Panthers",
-        "value": 1
-    },
-    {
-        "source": "New England Patriots",
-        "target": "Atlanta Falcons",
-        "value": 1
-    },
-    {
-        "source": "Philadelphia Eagles",
-        "target": "New England Patriots",
-        "value": 0
-    }
-];
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
 
-var nodes = [];
-console.log(links,"links")
-// Compute the distinct nodes from the links.
-links.forEach(function (link) {
-    link.source = nodes[link.source] ||
-        (nodes[link.source] = {
-            name: link.source
-        });
-    link.target = nodes[link.target] ||
-        (nodes[link.target] = {
-            name: link.target
-        });
-    
-});
-//compute degrees of nodes
-d3.values(nodes).forEach(function(node){
-    node.degree = 0;
-    links.forEach(function(link){
-        if(link.source.name == node.name){
-            node.degree++;
-        }
-    });
-});
+// var parseDate = d3.time.format("%Y-%m-%d").parse,
+//     formatDate = d3.time.format("%b %d");
 
-var width = 1200,
-    height = 700;
+// var x = d3.time.scale().range([0, width]),
+//     y = d3.scale.linear().range([height, 0]),
+//     z = d3.scale.linear().range(["white", "steelblue"]);
 
-var force = d3.forceSimulation()
-    .nodes(d3.values(nodes))
-    .force("link", d3.forceLink(links).distance(60))
-    .force('center', d3.forceCenter(width / 2, height / 2))
-    .force("x", d3.forceX())
-    .force("y", d3.forceY())
-    .force("charge", d3.forceManyBody().strength(-250))
-    .alphaTarget(1)
-    .on("tick", tick);
+// The size of the buckets in the CSV data file.
+// This could be inferred from the data if it weren't sparse.
+var xStep = 864e5,
+    yStep = 100;
 
 var svg = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height);
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-// add the links and the arrows
+d3.csv("heatmap.csv").then(function (dataset) {
+    console.log(dataset)
 
-var path = svg.append("g")
-    .selectAll("path")
-    .data(links)
-    .enter()
-    .append("path")
-    .attr("class", function (d) {
-        return "link " + d.type;
-    });
+    var data = ["Option 1", "Option 2", "Option 3"];
 
-// add path colour
+    var select = d3.select('body')
+    .append('select')
+        .attr('class','select')
+        .on('change',onchange)
 
-path.style("stroke", function (d) {
-    if (d.value == 0)
-        return "green";
-    else if (d.value == 1)
-        return "blue";
-})
+    var options = select
+    .selectAll('option')
+        .data(data).enter()
+        .append('option')
+            .text(function (d) { return d; });
 
-// define the nodes
-var node = svg.selectAll(".node")
-    .data(force.nodes())
-    .enter().append("g")
-    .attr("class", "node")    
-    .call(d3.drag()
-        .on("start", dragstarted)
-        .on("drag", dragged)
-        .on("end", dragended)
-    );
+    function onchange() {
+        selectValue = d3.select('select').property('value')
+        d3.select('body')
+            .append('p')
+            .text(selectValue + ' is the last selected option.')
+    };
+    // // Coerce the CSV data to the appropriate types.
+    // buckets.forEach(function (d) {
+    //     d.date = parseDate(d.date);
+    //     d.bucket = +d.bucket;
+    //     d.count = +d.count;
+    // });
 
-// add the nodes
-node.append("circle")
-    .attr("r", d => 5 + d.degree * 2)
-    .on("dblclick", function (d) { //add an asterisk
-        d.fixed = !d.fixed;
-        // console.log("dbl clicked ",d.fixed);        
-        d3.select(this).style("fill", d.fixed == true ? "#ff0000" : "#ccc");        
-    });
+    // // Compute the scale domains.
+    // x.domain(d3.extent(buckets, function (d) {
+    //     return d.date;
+    // }));
+    // y.domain(d3.extent(buckets, function (d) {
+    //     return d.bucket;
+    // }));
+    // z.domain([0, d3.max(buckets, function (d) {
+    //     return d.count;
+    // })]);
 
-// Adding Text (needs to be below)
-node.append("text")
-    .attr("dx", 20)
-    .attr("dy", ".35em")
-    .attr("y", 20)
-    .style("text-anchor", "middle")
-    .text(function (d) {
-        return d.name;
-    });
+    // // Extend the x- and y-domain to fit the last bucket.
+    // // For example, the y-bucket 3200 corresponds to values [3200, 3300].
+    // x.domain([x.domain()[0], +x.domain()[1] + xStep]);
+    // y.domain([y.domain()[0], y.domain()[1] + yStep]);
 
-// add the curvy lines
-function tick() {
-    path.attr("d", function (d) {
-        var dx = d.target.x - d.source.x,
-            dy = d.target.y - d.source.y,
-            dr = Math.sqrt(dx * dx + dy * dy);
-        return "M" +
-            d.source.x + "," +
-            d.source.y + "A" +
-            dr + "," + dr + " 0 0,1 " +
-            d.target.x + "," +
-            d.target.y
-    });
+    // // Display the tiles for each non-zero bucket.
+    // // See http://bl.ocks.org/3074470 for an alternative implementation.
+    // svg.selectAll(".tile")
+    //     .data(buckets)
+    //     .enter().append("rect")
+    //     .attr("class", "tile")
+    //     .attr("x", function (d) {
+    //         return x(d.date);
+    //     })
+    //     .attr("y", function (d) {
+    //         return y(d.bucket + yStep);
+    //     })
+    //     .attr("width", x(xStep) - x(0))
+    //     .attr("height", y(0) - y(yStep))
+    //     .style("fill", function (d) {
+    //         return z(d.count);
+    //     });
 
-    node
-        .attr("transform", function (d) {
-            return "translate(" + d.x + "," + d.y + ")";
-        })
-};
+    // // Add a legend for the color values.
+    // var legend = svg.selectAll(".legend")
+    //     .data(z.ticks(6).slice(1).reverse())
+    //     .enter().append("g")
+    //     .attr("class", "legend")
+    //     .attr("transform", function (d, i) {
+    //         return "translate(" + (width + 20) + "," + (20 + i * 20) + ")";
+    //     });
 
-// function dblclick(d) {
-//     d3.select(this).classed("fixed", function (d) {
-//         if (d.fixed == true) {
-//             d.fixed = false;
-//         } else {
-//             d.fixed = true;
-//         }
-//     });
-//     d3.select(this).select("circle").style("fill", function (d) {
-//         if (d.fixed == true) {
-//             return 'red';
-//         } else {
-//             return '#ccc';
-//         }
-//     });
-// }
+    // legend.append("rect")
+    //     .attr("width", 20)
+    //     .attr("height", 20)
+    //     .style("fill", z);
 
-function dragstarted(d) {
-    if (!d3.event.active) force.alphaTarget(0.3).restart();
-    d.fx = d.x;
-    d.fy = d.y;
-};
+    // legend.append("text")
+    //     .attr("x", 26)
+    //     .attr("y", 10)
+    //     .attr("dy", ".35em")
+    //     .text(String);
 
-function dragged(d) {
-    d.fx = d3.event.x;
-    d.fy = d3.event.y;
-};
+    // svg.append("text")
+    //     .attr("class", "label")
+    //     .attr("x", width + 20)
+    //     .attr("y", 10)
+    //     .attr("dy", ".35em")
+    //     .text("Count");
 
-function dragended(d) {
-    if (!d3.event.active) force.alphaTarget(0);
-    if (d.fixed == true) {
-        d.fx = d.x;
-        d.fy = d.y;
-    } else {
-        d.fx = null;
-        d.fy = null;
-    }
+    // // Add an x-axis with label.
+    // svg.append("g")
+    //     .attr("class", "x axis")
+    //     .attr("transform", "translate(0," + height + ")")
+    //     .call(d3.svg.axis().scale(x).ticks(d3.time.days).tickFormat(formatDate).orient("bottom"))
+    //     .append("text")
+    //     .attr("class", "label")
+    //     .attr("x", width)
+    //     .attr("y", -6)
+    //     .attr("text-anchor", "end")
+    //     .text("Date");
 
-};
+    // // Add a y-axis with label.
+    // svg.append("g")
+    //     .attr("class", "y axis")
+    //     .call(d3.svg.axis().scale(y).orient("left"))
+    //     .append("text")
+    //     .attr("class", "label")
+    //     .attr("y", 6)
+    //     .attr("dy", ".71em")
+    //     .attr("text-anchor", "end")
+    //     .attr("transform", "rotate(-90)")
+    //     .text("Value");
+});
