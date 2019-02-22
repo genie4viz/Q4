@@ -11,12 +11,12 @@ var margin = {
 var selected_year = "2011";
 var years = ["2011", "2012", "2013", "2014", "2015"];
 //add option
-var select = d3.select('body')
+var select = d3.select("#select-year")
     .append('select')
     .attr("x", 0)
     .attr("y", 0)
     .attr('class', 'select')
-    .on('change', onchange);
+    .on('change', onchangeYear);
 select
     .selectAll('option')
     .data(years).enter()
@@ -24,9 +24,9 @@ select
     .text(function (d) {
         return d;
     });
-onchange();
+onchangeYear();
 // append the svg object to the body of the page
-var svg = d3.select("body")
+var svg = d3.select("#data-viz")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
@@ -34,32 +34,14 @@ var svg = d3.select("body")
     .attr("transform",
         "translate(" + margin.left + "," + margin.top + ")");
 
-// Add title to graph
-svg.append("text")
-    .attr("x", 0)
-    .attr("y", -50)
-    .attr("text-anchor", "left")
-    .style("font-size", "22px")
-    .text("Vizualizing Crimes in New York City");
-
-// Add label for dropdown list
-svg.append("text")
-    .attr("x", 0)
-    .attr("y", -20)
-    .attr("text-anchor", "left")
-    .style("font-size", "14px")
-    .style("fill", "grey")
-    .style("max-width", 400)
-    .text("Year ");
-
-function onchange() {
+function onchangeYear() {
     selected_year = d3.select('select').property('value');
     //Read the data
     d3.csv("heatmap.csv").then(function (data) {
 
         data = reshape(data, selected_year);
         var boroughs = d3.map(data, d => d.borough).keys();
-        var crimes = d3.map(data, d => d.crimetype).keys();        
+        var crimes = d3.map(data, d => d.crimetype).keys();
 
         //clear rects
         svg.selectAll("*").remove();
