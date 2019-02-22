@@ -59,8 +59,7 @@ function onchange() {
 
         data = reshape(data, selected_year);
         var boroughs = d3.map(data, d => d.borough).keys();
-        var crimes = d3.map(data, d => d.crimetype).keys();
-        var times = d3.map(data, d => d.times).keys();
+        var crimes = d3.map(data, d => d.crimetype).keys();        
 
         //clear rects
         svg.selectAll("*").remove();
