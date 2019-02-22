@@ -1,141 +1,97 @@
+// set the dimensions and margins of the graph
 var margin = {
-        top: 20,
-        right: 90,
+        top: 80,
+        right: 25,
         bottom: 30,
-        left: 50
+        left: 120
     },
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    width = 650 - margin.left - margin.right,
+    height = 550 - margin.top - margin.bottom;
 
-// var parseDate = d3.time.format("%Y-%m-%d").parse,
-//     formatDate = d3.time.format("%b %d");
-
-// var x = d3.time.scale().range([0, width]),
-//     y = d3.scale.linear().range([height, 0]),
-//     z = d3.scale.linear().range(["white", "steelblue"]);
-
-// The size of the buckets in the CSV data file.
-// This could be inferred from the data if it weren't sparse.
-var xStep = 864e5,
-    yStep = 100;
-
-var svg = d3.select("body").append("svg")
+// append the svg object to the body of the page
+var svg = d3.select("body")
+    .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    .attr("transform",
+        "translate(" + margin.left + "," + margin.top + ")");
 
-d3.csv("heatmap.csv").then(function (dataset) {
-    console.log(dataset)
+//Read the data
+d3.csv("heatmap.csv").then(function (data) {
 
-    var data = ["Option 1", "Option 2", "Option 3"];
+    // Labels of row and columns -> unique identifier of the column called 'group' and 'variable'
+    var crimeTypes = d3.map(data, function (d) {
+        return d.CrimeType;
+    }).keys();
+    var boroughs = ["Bronx", "Brooklyn" ,"Manhattan" ,"Queens", "Staten Island"];
 
-    var select = d3.select('body')
-    .append('select')
-        .attr('class','select')
-        .on('change',onchange)
+    // Build X scales and axis:
+    var x = d3.scaleBand()
+        .range([0, width])
+        .domain(crimeTypes)
+        .padding(0.05);
+    svg.append("g")
+        .style("font-size", 15)
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x).tickSize(0))
+        .select(".domain").remove();
 
-    var options = select
-    .selectAll('option')
-        .data(data).enter()
-        .append('option')
-            .text(function (d) { return d; });
+    // Build Y scales and axis:
+    var y = d3.scaleBand()
+        .range([height, 0])
+        .domain(boroughs)
+        .padding(0.05);
+    svg.append("g")
+        .style("font-size", 15)
+        .call(d3.axisLeft(y).tickSize(0))
+        .select(".domain").remove();
 
-    function onchange() {
-        selectValue = d3.select('select').property('value')
-        d3.select('body')
-            .append('p')
-            .text(selectValue + ' is the last selected option.')
-    };
-    // // Coerce the CSV data to the appropriate types.
-    // buckets.forEach(function (d) {
-    //     d.date = parseDate(d.date);
-    //     d.bucket = +d.bucket;
-    //     d.count = +d.count;
-    // });
+    // Build color scale
+    var myColor = d3.scaleSequential()
+        .interpolator(d3.interpolateInferno)
+        .domain([1, 100]);
 
-    // // Compute the scale domains.
-    // x.domain(d3.extent(buckets, function (d) {
-    //     return d.date;
-    // }));
-    // y.domain(d3.extent(buckets, function (d) {
-    //     return d.bucket;
-    // }));
-    // z.domain([0, d3.max(buckets, function (d) {
-    //     return d.count;
-    // })]);
+    // add the squares
+    svg.selectAll()
+        .data(data, function (d) {
+            console.log(d.CrimeType + ':' + d.Bronx);
+            return d.CrimeType + ':' + d.Bronx;
+        })
+        .enter()
+        .append("rect")
+        .attr("x", function (d) {
+            return x(d.CrimeType)
+        })
+        .attr("y", function (d) {
+            return y(d.Bronx)
+        })
+        .attr("rx", 4)
+        .attr("ry", 4)
+        .attr("width", x.bandwidth())
+        .attr("height", y.bandwidth())
+        .style("fill", function (d) {
+            return myColor(d.value)
+        })
+        .style("stroke-width", 4)
+        .style("stroke", "none")
+        .style("opacity", 0.8)
+})
 
-    // // Extend the x- and y-domain to fit the last bucket.
-    // // For example, the y-bucket 3200 corresponds to values [3200, 3300].
-    // x.domain([x.domain()[0], +x.domain()[1] + xStep]);
-    // y.domain([y.domain()[0], y.domain()[1] + yStep]);
+// Add title to graph
+svg.append("text")
+    .attr("x", 0)
+    .attr("y", -50)
+    .attr("text-anchor", "left")
+    .style("font-size", "22px")
+    .text("A d3.js heatmap");
 
-    // // Display the tiles for each non-zero bucket.
-    // // See http://bl.ocks.org/3074470 for an alternative implementation.
-    // svg.selectAll(".tile")
-    //     .data(buckets)
-    //     .enter().append("rect")
-    //     .attr("class", "tile")
-    //     .attr("x", function (d) {
-    //         return x(d.date);
-    //     })
-    //     .attr("y", function (d) {
-    //         return y(d.bucket + yStep);
-    //     })
-    //     .attr("width", x(xStep) - x(0))
-    //     .attr("height", y(0) - y(yStep))
-    //     .style("fill", function (d) {
-    //         return z(d.count);
-    //     });
-
-    // // Add a legend for the color values.
-    // var legend = svg.selectAll(".legend")
-    //     .data(z.ticks(6).slice(1).reverse())
-    //     .enter().append("g")
-    //     .attr("class", "legend")
-    //     .attr("transform", function (d, i) {
-    //         return "translate(" + (width + 20) + "," + (20 + i * 20) + ")";
-    //     });
-
-    // legend.append("rect")
-    //     .attr("width", 20)
-    //     .attr("height", 20)
-    //     .style("fill", z);
-
-    // legend.append("text")
-    //     .attr("x", 26)
-    //     .attr("y", 10)
-    //     .attr("dy", ".35em")
-    //     .text(String);
-
-    // svg.append("text")
-    //     .attr("class", "label")
-    //     .attr("x", width + 20)
-    //     .attr("y", 10)
-    //     .attr("dy", ".35em")
-    //     .text("Count");
-
-    // // Add an x-axis with label.
-    // svg.append("g")
-    //     .attr("class", "x axis")
-    //     .attr("transform", "translate(0," + height + ")")
-    //     .call(d3.svg.axis().scale(x).ticks(d3.time.days).tickFormat(formatDate).orient("bottom"))
-    //     .append("text")
-    //     .attr("class", "label")
-    //     .attr("x", width)
-    //     .attr("y", -6)
-    //     .attr("text-anchor", "end")
-    //     .text("Date");
-
-    // // Add a y-axis with label.
-    // svg.append("g")
-    //     .attr("class", "y axis")
-    //     .call(d3.svg.axis().scale(y).orient("left"))
-    //     .append("text")
-    //     .attr("class", "label")
-    //     .attr("y", 6)
-    //     .attr("dy", ".71em")
-    //     .attr("text-anchor", "end")
-    //     .attr("transform", "rotate(-90)")
-    //     .text("Value");
-});
+// Add subtitle to graph
+svg.append("text")
+    .attr("x", 0)
+    .attr("y", -20)
+    .attr("text-anchor", "left")
+    .style("font-size", "14px")
+    .style("fill", "grey")
+    .style("max-width", 400)
+    .text("A short description of the take-away message of this chart.");
