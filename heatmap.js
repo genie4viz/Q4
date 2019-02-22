@@ -5,9 +5,9 @@ var margin = {
         bottom: 30,
         left: 120
     },
-    width = 650 - margin.left - margin.right,
+    width = 750 - margin.left - margin.right,
     height = 550 - margin.top - margin.bottom;
-
+var padding = 60;
 var selected_year = "2011";
 var years = ["2011", "2012", "2013", "2014", "2015"];
 //add option
@@ -48,7 +48,7 @@ function onchangeYear() {
 
         // Build X scales and axis:
         var x = d3.scaleBand()
-            .range([0, width])
+            .range([0, width - padding])
             .domain(crimes)
             .padding(0.05);
         svg.append("g")
@@ -67,6 +67,8 @@ function onchangeYear() {
             .call(d3.axisLeft(y).tickSize(0))
             .select(".domain").remove();
 
+        svg.append("text").attr("x", width - padding ).attr("y", height - 90).attr("text-anchor", "right").text("Crime Type");
+        svg.append("text").attr("x", -40).attr("y", 0).attr("text-anchor", "middle").text("Borough");
         // Build color scale
         var maxTimes = d3.max(data, d => d.times / 1);
 
@@ -126,7 +128,7 @@ function onchangeYear() {
             .attr("x", function (d, i) {
                 return legendElementWidth * i;
             })
-            .attr("y", height - 20);
+            .attr("y", height - 15);
         legend.exit().remove();
 
     });
